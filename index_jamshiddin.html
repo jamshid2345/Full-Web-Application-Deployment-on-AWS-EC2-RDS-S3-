@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Jamshiddin's Social Media Tracker</title>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f8f8f8; }
+        h1 { color: #333; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    </style>
+</head>
+<body>
+    <h1>Jamshiddin's Social Media Tracker</h1>
+
+    <h3>Social Media Data:</h3>
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>Platform</th>
+                <th>Owner</th>
+                <th>Country</th>
+                <th>Primary Usage</th>
+                <th>Daily Time Spent (min)</th>
+                <th>Verified Account</th>
+                <th>Date Joined</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        const apiUrl = 'http://3.38.212.216:5000';
+
+        function loadData() {
+            fetch(`${apiUrl}/socialmedia`)
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.querySelector('#dataTable tbody');
+                    tbody.innerHTML = '';
+
+                    if (Array.isArray(data) && data.length > 0) {
+                        data.forEach(item => {
+                            const row = `<tr>
+                                <td>${item["platform"]}</td>
+                                <td>${item["owner"]}</td>
+                                <td>${item["country"]}</td>
+                                <td>${item["Primary Usage"]}</td>
+                                <td>${item["Daily Time Spent (min)"]}</td>
+                                <td>${item["Verified Account"]}</td>
+                                <td>${item["Date Joined"]}</td>
+                            </tr>`;
+                            tbody.innerHTML += row;
+                        });
+                    } else {
+                        tbody.innerHTML = `<tr><td colspan="7">No data found.</td></tr>`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading data:', error);
+                });
+        }
+
+        window.onload = loadData;
+    </script>
+</body>
+</html>
