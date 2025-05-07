@@ -1,6 +1,14 @@
 # Full-Web-Application-Deployment-on-AWS-EC2-RDS-S3-
 # Jamshiddin's Social Media Tracker Web App
 
+S3 site is: https://jamshiddin-webapp.s3.ap-northeast-2.amazonaws.com/index_jamshiddin.html
+
+EC2 Flask app is hosted at: http://3.38.212.216:5000/socialmedia
+
+RDS PostgreSQL database name is: db_jamshiddin
+
+The table is: tbl_jamshiddin_socialmedia
+
 This project demonstrates a full web application deployment on AWS using the following services:
 - **Amazon EC2** for backend Flask API
 - **Amazon RDS (PostgreSQL)** for data storage
@@ -96,3 +104,55 @@ json
 -EC2 backend is responding to /socialmedia
 -RDS is connected and serving data
 -All components are integrated and working
+
+
+## 📘 Full Setup Instructions
+🔧 Part 1: Set Up Amazon RDS (PostgreSQL)
+Go to AWS RDS Console
+
+Click "Create database"
+
+Engine: PostgreSQL
+
+DB instance identifier: postgres
+
+Master username: postgres
+
+Master password: postgres
+
+Under Connectivity:
+
+Make the DB publicly accessible
+
+Allow inbound traffic on port 5432
+
+Launch the instance.
+
+After creation, copy the Endpoint (e.g., db-jamshiddin.xxxx.rds.amazonaws.com)
+
+Use DBeaver or psql to connect and run:
+CREATE TABLE tbl_jamshiddin_socialmedia (
+    platform VARCHAR(100),
+    owner VARCHAR(100),
+    country VARCHAR(100),
+    "Primary Usage" VARCHAR(100),
+    "Daily Time Spent (min)" FLOAT,
+    "Verified Account" VARCHAR(10),
+    "Date Joined" DATE
+);
+
+Import the dataset (socialmedia.csv) into this table using DBeaver or SQL import.
+
+## 🧰 Part 2: Launch EC2 and Deploy Flask Backend
+Go to AWS EC2 Console
+
+Launch a new Ubuntu 20.04 instance.
+
+Allow HTTP, HTTPS, and port 5000 in the security group.
+
+SSH into your EC2:
+
+bash
+ssh -i your-key.pem ubuntu@<your-ec2-public-ip>
+
+
