@@ -1,65 +1,218 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Jamshiddin's Social Media Tracker</title>
     <meta charset="UTF-8">
+    <h1>Welcome, Jamshiddin Sirojiddinov</h1>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial; padding: 20px; background: #f8f8f8; }
-        h1 { color: #333; }
-        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb;
+            padding: 30px;
+            color: #333;
+            line-height: 1.7;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4f46e5;
+            font-weight: 600;
+        }
+
+        form, .data-section {
+            max-width: 800px;
+            margin: 2rem auto;
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        input, button {
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            width: calc(100% - 2rem);
+            border: 1px solid #e0e6ed;
+            border-radius: 0.5rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        button {
+            background-color: #4f46e5;
+            color: white;
+            cursor: pointer;
+            font-weight: 500;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #6366f1;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #e5e7eb;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f3f4f6;
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            display: none;
+        }
+
+        #message.success {
+            background-color: #dcfce7;
+            color: #15803d;
+        }
+
+        #message.error {
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
     </style>
 </head>
 <body>
+
     <h1>Jamshiddin's Social Media Tracker</h1>
 
-    <h3>Social Media Data:</h3>
-    <table id="dataTable">
-        <thead>
-            <tr>
-                <th>Platform</th>
-                <th>Owner</th>
-                <th>Country</th>
-                <th>Primary Usage</th>
-                <th>Daily Time Spent (min)</th>
-                <th>Verified Account</th>
-                <th>Date Joined</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+    <form id="addForm">
+        <h2>Add New Entry</h2>
+        <input type="text" id="platform" placeholder="Platform" required>
+        <input type="text" id="owner" placeholder="Owner" required>
+        <input type="text" id="primary_usage" placeholder="Primary Usage" required>
+        <input type="text" id="country" placeholder="Country" required>
+        <input type="number" id="daily_time_spent_min" placeholder="Daily Time Spent (min)" required>
+        <input type="text" id="verified_account" placeholder="Verified Account (True/False)" required>
+        <input type="date" id="date_joined" required>
+        <button type="submit">Add</button>
+    </form>
+
+    <form id="deleteForm" class="data-section">
+        <h2>Delete Entry by Owner</h2>
+        <input type="text" id="deleteOwner" placeholder="Owner to Delete" required>
+        <button type="submit">Delete</button>
+    </form>
+
+    <div class="data-section">
+        <h2>Social Media Data</h2>
+        <div id="message"></div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Platform</th>
+                    <th>Owner</th>
+                    <th>Usage</th>
+                    <th>Country</th>
+                    <th>Time (min)</th>
+                    <th>Verified</th>
+                    <th>Date Joined</th>
+                </tr>
+            </thead>
+            <tbody id="dataTable"></tbody>
+        </table>
+    </div>
 
     <script>
-        const apiUrl = 'http://3.38.212.216:5000';
+        const apiUrl = 'http://15.165.75.252:5050';  // ✅ Correct base URL
+
+        const messageBox = document.getElementById('message');
+
+        function showMessage(text, type = 'success') {
+            messageBox.textContent = text;
+            messageBox.className = `success error`.includes(type) ? `success error` : '';
+            messageBox.classList.add(type);
+            messageBox.style.display = 'block';
+            setTimeout(() => {
+                messageBox.style.display = 'none';
+            }, 3000);
+        }
 
         function loadData() {
             fetch(`${apiUrl}/socialmedia`)
-                .then(response => response.json())
+                .then(res => res.json())
                 .then(data => {
-                    const tbody = document.querySelector('#dataTable tbody');
-                    tbody.innerHTML = '';
-
-                    if (Array.isArray(data) && data.length > 0) {
-                        data.forEach(item => {
-                            const row = `<tr>
-                                <td>${item["platform"]}</td>
-                                <td>${item["owner"]}</td>
-                                <td>${item["country"]}</td>
-                                <td>${item["Primary Usage"]}</td>
-                                <td>${item["Daily Time Spent (min)"]}</td>
-                                <td>${item["Verified Account"]}</td>
-                                <td>${item["Date Joined"]}</td>
-                            </tr>`;
-                            tbody.innerHTML += row;
-                        });
-                    } else {
-                        tbody.innerHTML = `<tr><td colspan="7">No data found.</td></tr>`;
-                    }
+                    const table = document.getElementById('dataTable');
+                    table.innerHTML = '';
+                    data.forEach(item => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${item.platform}</td>
+                            <td>${item.owner}</td>
+                            <td>${item.primary_usage}</td>
+                            <td>${item.country}</td>
+                            <td>${item.daily_time_spent_min}</td>
+                            <td>${item.verified_account}</td>
+                            <td>${item.date_joined}</td>
+                        `;
+                        table.appendChild(row);
+                    });
                 })
-                .catch(error => {
-                    console.error('Error loading data:', error);
-                });
+                .catch(err => showMessage("Error loading data: " + err.message, 'error'));
         }
+
+        document.getElementById('addForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const data = {
+                platform: document.getElementById('platform').value,
+                owner: document.getElementById('owner').value,
+                primary_usage: document.getElementById('primary_usage').value,
+                country: document.getElementById('country').value,
+                daily_time_spent_min: document.getElementById('daily_time_spent_min').value,
+                verified_account: document.getElementById('verified_account').value,
+                date_joined: document.getElementById('date_joined').value
+            };
+
+            fetch(`${apiUrl}/add`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(res => {
+                showMessage(res.message || 'Added!');
+                loadData();
+                document.getElementById('addForm').reset();
+            })
+            .catch(err => showMessage('Add failed: ' + err.message, 'error'));
+        });
+
+        document.getElementById('deleteForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const owner = document.getElementById('deleteOwner').value;
+            fetch(`${apiUrl}/delete`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ owner })
+            })
+            .then(res => res.json())
+            .then(res => {
+                showMessage(res.message || 'Deleted!');
+                loadData();
+                document.getElementById('deleteForm').reset();
+            })
+            .catch(err => showMessage('Delete failed: ' + err.message, 'error'));
+        });
 
         window.onload = loadData;
     </script>
